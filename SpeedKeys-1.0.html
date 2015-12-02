@@ -1,0 +1,142 @@
+<html>
+   <head>
+      <title>Speed Keys 1.0</title>
+
+      <style type="text/css">
+         table {
+            width: 100%;
+            height: 100%;
+         }
+
+         p {
+            text-align: center;
+            vertical-align: middle;
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            font-size: 32px;
+         }
+
+         #title {
+            font-size: 36px;
+         }
+
+         #score {
+            color: blue;
+         }
+
+         #goButton {
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            font-size: 32px;
+         }
+      </style>
+   </head>
+   <body>
+      <div id="panel1">
+         <table>
+            <tr><td>
+               <p id="title">Speed Keys</p>
+
+               <p id="instructions"></p>
+
+               <p id="score"></p>
+
+               <p>
+               <input name="modeRadio" type="radio" value="letters" checked>Letters</input>
+               <input name="modeRadio" type="radio" value="numbers">Numbers</input>
+               <input name="modeRadio" type="radio" value="both">Both</input>
+               </p>
+
+               <p><input id='goButton' type='button' value='Go!'></p>
+            </td></tr>
+         </table>
+      </div>
+
+      <div id="panel2">
+         <table><tr><td><p id="char"></p></td></tr></table>
+      </div>
+
+      <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+      <script type="text/javascript">
+         var delaySec = 3;
+         var delayMillis = delaySec * 1000;
+         var score = 0;
+         var highScore = 0;
+         var timer;
+         var charCodes;
+         var keyCodes;
+         var charIndex = 0;
+         var prevCharIndex = 0;
+         var charCode = 0;
+         var keyCode = 0;
+
+         $("#panel2").hide();
+         $("#instructions").html("Hit the key that you see in " + delaySec + " seconds.");
+         $("#goButton").click(function() { setTimeout(start, 500); });
+
+         //--------------------------------------------------------------------
+
+         function addCharCodes(count, minChar, minKey) {
+            for (var n = 0; n < count; n ++) {
+               charCodes.push(minChar + n);
+               keyCodes.push(minKey + n);
+            }
+         }
+
+         function start() {
+            mode = $("input[name='modeRadio']:checked").val();
+            charCodes = [];
+            keyCodes = [];
+
+            if (mode == "letters") {
+               addCharCodes(26, 65, 97);
+            } else if (mode == "numbers") {
+               addCharCodes(10, 48, 48);
+            } else {
+               addCharCodes(26, 65, 97);
+               addCharCodes(10, 48, 48);
+            }
+
+            $("#panel1").hide();
+            $("#panel2").show();
+
+            score = 0;
+
+            $(document).keypress(function(event) {
+               if (event.which == keyCode) {
+                  score ++;
+                  showKey();
+               } else {
+                  stop();
+               }
+            });
+
+            showKey();
+         };
+
+         function stop() {
+            clearInterval(timer);
+            $(document).unbind("keypress");
+            if (score > highScore) { highScore = score; }
+            $("#score").html("Score: " + score + "<br>High Score: " + highScore);
+            $("#panel2").hide();
+            $("#panel1").show();
+         }
+
+         function showKey() {
+            clearInterval(timer);
+
+            while (prevCharIndex == charIndex) { charIndex = Math.floor(Math.random() * charCodes.length); }
+            prevCharIndex = charIndex;
+            charCode = charCodes[charIndex];
+            keyCode = keyCodes[charIndex];
+            // log("charCode: " + charCode + ", keyCode: " + keyCode);
+            $("#char").text(String.fromCharCode(charCode));
+            timer = setInterval(stop, delayMillise);
+         }
+
+         function log(msg) {
+            window.console && console.log(msg);
+         }
+      </script>
+   </body>
+</html>

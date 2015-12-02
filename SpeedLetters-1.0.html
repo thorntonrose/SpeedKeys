@@ -1,0 +1,92 @@
+<html>
+   <head>
+      <title>Speed Letters 1.0</title>
+
+      <style type="text/css">
+         table {
+            width: 100%;
+            height: 100%;
+         }
+
+         p {
+            text-align: center;
+            vertical-align: middle;
+            /*font-family: Georgia, serif;*/
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            font-size: 32px;
+         }
+
+         #goButton {
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            font-size: 32px;
+         }
+      </style>
+   </head>
+   <body>
+      <div id="panel1">
+         <table><tr><td>
+            <p id="score"></p>
+            <p>Press the button when ready.</p>
+            <p><input id='goButton' type='button' value='Go!'></p>
+         </td></tr></table>
+      </div>
+
+      <div id="panel2">
+         <table><tr><td><p id="letter"></p></td></tr></table>
+      </div>
+
+      <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+      <script type="text/javascript">
+         var score = 0;
+         var highScore = 0;
+         var charCode = 0;
+         var prevCharCode = 0;
+         var timer;
+
+         $("#panel2").hide();
+         $("#goButton").click(function() { setTimeout(start, 500); });
+
+         //--------------------------------------------------------------------
+
+         function start() {
+            $("#panel1").hide();
+            $("#panel2").show();
+
+            score = 0;
+
+            $(document).keypress(function(event) {
+               if (event.which == (97 + charCode)) {
+                  score ++;
+                  showLetter();
+               } else {
+                  stop();
+               }
+            });
+
+            showLetter();
+         };
+
+         function stop() {
+            clearInterval(timer);
+            $(document).unbind("keypress");
+            if (score > highScore) { highScore = score; }
+            $("#score").html(score + "<br>High score is " + highScore + ".");
+            $("#panel2").hide();
+            $("#panel1").show();
+         }
+
+         function showLetter() {
+            clearInterval(timer);
+
+            while (prevCharCode == charCode) {
+               charCode = Math.floor(Math.random() * 26);
+            }
+
+            prevCharCode = charCode;
+            $("#letter").text(String.fromCharCode(65 + charCode));
+            timer = setInterval(stop, 5*1000);
+         }
+      </script>
+   </body>
+</html>
